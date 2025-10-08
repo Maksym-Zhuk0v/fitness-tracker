@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   SidebarInset,
@@ -14,8 +16,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
 
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const segments = pathname?.split("/") || [];
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -30,13 +35,11 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  Track your workouts with us
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{}</BreadcrumbPage>
+                  <BreadcrumbPage>{segments.join(" / ")}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

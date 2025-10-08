@@ -5,22 +5,17 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { fetchUserWorkouts } from "@/services/workoutService";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const WorkoutHistory = () => {
-  const { user } = useUserStore();
+  const { user, loading } = useUserStore();
   const [workouts, setWorkouts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    console.log(user);
     if (!user) return;
 
-    setLoading(true);
-
-    fetchUserWorkouts(user.id)
-      .then(setWorkouts)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchUserWorkouts(user.user_id).then(setWorkouts).catch(console.error);
   }, [user]);
 
   if (loading) {
@@ -30,6 +25,8 @@ export const WorkoutHistory = () => {
       </div>
     );
   }
+
+  if (!user) router.push("/account");
 
   return (
     <div className="space-y-4 mx-auto mt-6 max-w-3xl">

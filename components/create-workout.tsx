@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ExerciseBlock } from "./workout/ExerciseBlock";
 import { useUserStore } from "@/hooks/useUserStore";
 import { fetchExercises } from "@/services/exerciseService";
 import { addSetsToWorkout, createWorkout } from "@/services/workoutService";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const CreateWorkout = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
-  const { user } = useUserStore();
+  const { user, loading } = useUserStore();
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<any[]>([]);
   const [blocks, setBlocks] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetchExercises().then(setExercises).catch(console.error);
@@ -30,7 +32,7 @@ const CreateWorkout = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
     console.log(user);
     if (!user) return;
     console.log(user);
-    const workout = await createWorkout(user.id, workoutName);
+    const workout = await createWorkout(user.user_id, workoutName);
     await addSetsToWorkout(
       workout.id,
       blocks.map((b) => ({
@@ -45,19 +47,33 @@ const CreateWorkout = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
     setBlocks([]);
     setOpen?.(false);
   };
+
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center mt-6">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push("/account");
+    return null;
+  }
+
   return (
     <div>
       <div className="space-y-4 mt-2">
         <Input
-          placeholder="Имя тренировки"
+          placeholder="Workout name"
           value={workoutName}
           onChange={(e) => setWorkoutName(e.target.value)}
           className="w-full"
         />
         <div className="flex justify-between items-center">
-          <h3 className="font-semibold">Упражнения</h3>
+          <h3 className="font-semibold">Exercises</h3>
           <Button type="button" size="sm" onClick={addExerciseBlock}>
-            + Добавить упражнение
+            + Add exercise
           </Button>
         </div>
 
@@ -133,7 +149,7 @@ const CreateWorkout = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
           }
           onClick={handleSave}
         >
-          Сохранить тренировку
+          Save workout
         </Button>
       </div>
     </div>

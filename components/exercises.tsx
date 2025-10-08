@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useUserStore } from "@/hooks/useUserStore";
 
 export default function CreateExerciseForm() {
   const [exerciseName, setExerciseName] = useState("");
@@ -19,6 +20,10 @@ export default function CreateExerciseForm() {
   const [newGroupName, setNewGroupName] = useState("");
   const [groups, setGroups] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const { user } = useUserStore();
+
+  useEffect(() => console.log(user), [user]);
 
   const fetchGroups = async () => {
     const { data, error } = await supabase.from("exercises").select("group");
@@ -26,7 +31,9 @@ export default function CreateExerciseForm() {
       console.error(error);
       return;
     }
-    const uniqueGroups = Array.from(new Set(data.map((ex) => ex.group)));
+    const uniqueGroups = Array.from(
+      new Set(data.map((ex) => ex.group).filter(Boolean))
+    );
     setGroups(uniqueGroups);
   };
 
@@ -36,29 +43,35 @@ export default function CreateExerciseForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!exerciseName) return;
+    const trimmedName = exerciseName.trim();
+    const trimmedGroup = newGroupName.trim();
+
+    if (!trimmedName) return;
 
     let groupValue = selectedGroup;
     if (selectedGroup === "new") {
-      groupValue = newGroupName;
+      if (!trimmedGroup) return;
+      groupValue = trimmedGroup;
     }
     if (!groupValue) return;
 
     setLoading(true);
+    setMessage("");
 
     const { error } = await supabase.from("exercises").insert({
-      name: exerciseName,
+      name: trimmedName,
       group: groupValue,
     });
 
     if (error) {
       console.error(error);
+      setMessage("Error creating exercise.");
     } else {
-      // очистка формы после успеха
       setExerciseName("");
       setNewGroupName("");
       setSelectedGroup(null);
-      await fetchGroups(); // обновляем список групп
+      setMessage("Exercise created successfully!");
+      await fetchGroups();
     }
 
     setLoading(false);
@@ -71,14 +84,12 @@ export default function CreateExerciseForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Exercise name */}
           <Input
             placeholder="Exercise name"
             value={exerciseName}
             onChange={(e) => setExerciseName(e.target.value)}
           />
 
-          {/* Select group */}
           <Select
             onValueChange={(val) => setSelectedGroup(val)}
             value={selectedGroup || ""}
@@ -96,7 +107,6 @@ export default function CreateExerciseForm() {
             </SelectContent>
           </Select>
 
-          {/* Input for new group */}
           {selectedGroup === "new" && (
             <Input
               placeholder="New group name"
@@ -108,6 +118,12 @@ export default function CreateExerciseForm() {
           <Button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create"}
           </Button>
+
+          {message && (
+            <p className="text-sm text-center text-muted-foreground">
+              {message}
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>

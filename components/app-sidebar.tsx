@@ -6,10 +6,7 @@ import {
   BookOpen,
   Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings2,
   SquareTerminal,
 } from "lucide-react";
@@ -27,13 +24,17 @@ import {
 import { useUserStore } from "@/hooks/useUserStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, loading } = useUserStore();
+  const { user, loading, fetchUser, role } = useUserStore();
+
+  React.useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const data = {
     user: {
-      name: user?.user_metadata?.full_name || "Loading...",
-      email: user?.email || "",
-      avatar: user?.user_metadata?.avatar_url || undefined,
+      name: loading ? "Loading..." : user?.full_name,
+      email: loading ? "Loading..." : user?.email,
+      avatar: loading ? "Loading..." : user?.user_metadata?.avatar_url,
     },
     teams: [
       {
@@ -69,21 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
-      {
-        title: "Models",
-        url: "#",
-        icon: Bot,
-        items: [
-          {
-            title: "create Exercise",
-            url: "/exercises/create",
-          },
-          {
-            title: "View Exercises",
-            url: "/exercises/view",
-          },
-        ],
-      },
+
       {
         title: "Stats",
         url: "#",
@@ -104,14 +91,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Profile",
             url: "/account",
           },
-          {
-            title: "Exercises",
-            url: "/exercises/view",
-          },
         ],
       },
     ],
   };
+
+  if (role === "admin") {
+    data.navMain.push({
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "create Exercise",
+          url: "/exercises/create",
+        },
+        {
+          title: "View Exercises",
+          url: "/exercises/view",
+        },
+      ],
+    });
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

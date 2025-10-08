@@ -7,25 +7,19 @@ import { fetchUserWorkouts } from "@/services/workoutService";
 import { ExerciseStats } from "./Exercise-stats";
 import { fetchGroups } from "@/services/exerciseService";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Stats = () => {
-  const { user } = useUserStore();
+  const { user, loading } = useUserStore();
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [groupStats, setGroupStats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) return;
 
-    setLoading(true);
-    fetchUserWorkouts(user.id)
-      .then(setWorkouts)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-    fetchGroups(user.id)
-      .then(setGroupStats)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchUserWorkouts(user.user_id).then(setWorkouts).catch(console.error);
+    fetchGroups(user.user_id).then(setGroupStats).catch(console.error);
   }, [user]);
 
   const fetchedStats = groupStats.reduce((acc: any, row: any) => {
@@ -45,6 +39,10 @@ const Stats = () => {
         <Loader />
       </div>
     );
+  }
+
+  if (!user) {
+    router.push("/account");
   }
 
   return (

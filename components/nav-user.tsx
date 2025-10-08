@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -38,9 +39,12 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
+    router.refresh();
+
     if (error) console.log("Logout error:", error);
   };
 
@@ -58,8 +62,10 @@ export function NavUser({
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">
+                  {user.name || "Log in"}
+                </span>
+                <span className="truncate text-xs">{user.email || ""}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

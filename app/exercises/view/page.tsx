@@ -61,6 +61,8 @@ export default function ExerciseList() {
 
     setLoading(true);
 
+    console.log(editing, editName, editGroup);
+
     const { error } = await supabase
       .from("exercises")
       .update({ name: editName, group: editGroup })

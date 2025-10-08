@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { LoginForm } from "./login-form";
-import { useSupabaseUser } from "@/hooks/useSupabaseUser";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "./ui/badge";
 import { Loader } from "lucide-react";
+import { useUserStore } from "@/hooks/useUserStore";
 
 interface Profile {
   user_id: string;
@@ -21,37 +21,8 @@ interface Profile {
 }
 
 export default function UserDashboard() {
-  const { user, loading } = useSupabaseUser();
+  const { user, loading } = useUserStore();
   const [profile, setProfile] = useState<Profile | null>(null);
-
-  useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!session?.user) setProfile(null);
-      }
-    );
-    return () => listener.subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) {
-        setProfile(null);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error) console.log("Profile error:", error);
-      setProfile(data || null);
-    };
-
-    fetchProfile();
-  }, [user]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -60,7 +31,13 @@ export default function UserDashboard() {
     setProfile(null);
   };
 
-  if (loading) return <Loader className="mx-auto mt-10" />;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-32">
+        <Loader className="animate-spin" />
+      </div>
+    );
+
   if (!user) return <LoginForm />;
 
   return (

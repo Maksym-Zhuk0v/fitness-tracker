@@ -17,11 +17,11 @@ export const CreateWorkoutDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Создать тренировку</Button>
+        <Button>Create Workout</Button>
       </DialogTrigger>
       <DialogContent className="w-[90vw] max-w-3xl sm:max-w-3xl max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
-          <DialogTitle>Создать тренировку</DialogTitle>
+          <DialogTitle>Create Workout</DialogTitle>
         </DialogHeader>
         <CreateWorkout setOpen={setOpen} />
       </DialogContent>

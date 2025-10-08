@@ -40,13 +40,13 @@ export const ExerciseBlock: React.FC<ExerciseBlockProps> = ({
       <CardContent className="flex flex-col gap-3 w-full">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
           <div className="flex-1">
-            <Label>Упражнение</Label>
+            <Label>Exercise</Label>
             <Select
               value={block.exercise_name}
               onValueChange={onExerciseChange}
             >
               <SelectTrigger className="mt-4">
-                <SelectValue placeholder="Выберите упражнение..." />
+                <SelectValue placeholder="Select exercise..." />
               </SelectTrigger>
               <SelectContent>
                 {exercises.map((ex) => (
@@ -59,7 +59,7 @@ export const ExerciseBlock: React.FC<ExerciseBlockProps> = ({
           </div>
           <div className="flex gap-2 mt-2 sm:mt-0">
             <Button type="button" size="sm" variant="ghost" onClick={onAddSet}>
-              + Сет
+              + Set
             </Button>
             <Button
               type="button"
@@ -67,7 +67,7 @@ export const ExerciseBlock: React.FC<ExerciseBlockProps> = ({
               variant="destructive"
               onClick={onRemoveBlock}
             >
-              Удалить упражнение
+              Delete exercise
             </Button>
           </div>
         </div>

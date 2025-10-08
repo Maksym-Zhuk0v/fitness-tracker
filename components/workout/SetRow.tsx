@@ -36,7 +36,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         className="w-full sm:w-24"
       />
       <Button type="button" size="sm" variant="ghost" onClick={onRemove}>
-        Удалить
+        Delete
       </Button>
     </div>
   );

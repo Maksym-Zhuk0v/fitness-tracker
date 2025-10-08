@@ -46,7 +46,7 @@ export const fetchUserWorkouts = async (userId: string) => {
       )
     `
     )
-    .eq("user_id", "3115422a-664d-452a-bf23-7f50b0ebfca9")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
