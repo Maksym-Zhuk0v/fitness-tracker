@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronRight, Loader, type LucideIcon } from "lucide-react";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,6 +19,14 @@ import {
 import Link from "next/link";
 import { useUserStore } from "@/hooks/useUserStore";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { LoginForm } from "./login-form";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 export function NavMain({
   items,
@@ -36,9 +43,11 @@ export function NavMain({
   }[];
 }) {
   const { user, loading } = useUserStore();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
+
       {loading ? (
         <div className="mx-auto mt-10">
           <Loader />
@@ -79,9 +88,17 @@ export function NavMain({
             ))
           ) : (
             <SidebarGroupLabel>
-              <Button>
-                <Link href="/account">Log in</Link>
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>Log in</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogTitle className="text-lg font-semibold">
+                    Log in to your account
+                  </DialogTitle>
+                  <LoginForm />
+                </DialogContent>
+              </Dialog>
             </SidebarGroupLabel>
           )}
         </SidebarMenu>

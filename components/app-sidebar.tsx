@@ -28,13 +28,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   React.useEffect(() => {
     fetchUser();
-  }, [fetchUser]);
+    console.log("User data:", user);
+  }, [fetchUser, loading]);
 
   const data = {
     user: {
       name: loading ? "Loading..." : user?.full_name,
       email: loading ? "Loading..." : user?.email,
-      avatar: loading ? "Loading..." : user?.user_metadata?.avatar_url,
+      avatar: loading ? "Loading..." : user?.avatar_url,
     },
     teams: [
       {
